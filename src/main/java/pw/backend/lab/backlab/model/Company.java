@@ -19,6 +19,8 @@ public class Company implements Serializable {
 
     private static final long serialVersionUID = -6783504532088859179L;
 
+    public static Company EMPTY = new Company();
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

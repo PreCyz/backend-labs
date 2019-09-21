@@ -29,7 +29,10 @@ public class CompanyController {
     }
 
     @GetMapping(path = "/{id}")
-    public Company getCompany(@PathVariable Long id) {
-        return repository.getOne(id);
+    public ResponseEntity<Company> getCompany(@RequestHeader("securityH") String secureH, @PathVariable Long id) {
+        if (!"secureMe".equals(secureH)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Company.EMPTY);
+        }
+        return ResponseEntity.ok(repository.findById(id).orElseGet(() -> Company.EMPTY));
     }
 }
