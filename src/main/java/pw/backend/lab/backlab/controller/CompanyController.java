@@ -33,7 +33,6 @@ public class CompanyController {
 
     @PostMapping(path = "")
     public ResponseEntity<String> createCompanies(@RequestHeader HttpHeaders headers,
-                                                  @RequestHeader(SecurityService.SECURITY_HEADER) String securityHeaderValue,
                                                   @Valid @RequestBody List<Company> companies) {
         logger.info("Controller request headers: {}",
                 headers.entrySet()
@@ -41,7 +40,6 @@ public class CompanyController {
                         .map(entry -> String.format("%s->[%s]", entry.getKey(), String.join(",", entry.getValue())))
                         .collect(joining(","))
         );
-        logger.info("Security header: [{}]", securityHeaderValue);
         if (securityService.isAuthorized(headers)) {
             List<Company> result = repository.saveAll(companies);
             return ResponseEntity.ok(result.stream().map(c -> String.valueOf(c.getId())).collect(joining(",")));
@@ -51,7 +49,6 @@ public class CompanyController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Company> getCompany(@RequestHeader HttpHeaders headers,
-                                              @RequestHeader(SecurityService.SECURITY_HEADER) String securityHeaderValue,
                                               @PathVariable Long id) {
         logger.info("Controller request headers {}",
                 headers.entrySet()
@@ -59,7 +56,6 @@ public class CompanyController {
                         .map(entry -> String.format("%s->[%s]", entry.getKey(), String.join(",", entry.getValue())))
                         .collect(joining(","))
         );
-        logger.info("Security header: [{}]", securityHeaderValue);
         if (securityService.isAuthorized(headers)) {
             return ResponseEntity.ok(repository.findById(id).orElseGet(() -> Company.EMPTY));
         }
