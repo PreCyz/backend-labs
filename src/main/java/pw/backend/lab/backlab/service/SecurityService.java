@@ -1,21 +1,34 @@
 package pw.backend.lab.backlab.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import static java.util.stream.Collectors.joining;
 
 @Service
 public class SecurityService {
 
-    private final String SECURITY_HEADER = "securityH";
+    Logger logger = LoggerFactory.getLogger(SecurityService.class);
+
+    private final String SECURITY_HEADER = "security_header";
     private final String SECURITY_HEADER_VALUE = "secureMe";
 
-    public boolean isAuthenticated(Map<String, String> requestHeaders) {
-        return requestHeaders != null && requestHeaders.containsKey(SECURITY_HEADER) &&
-                SECURITY_HEADER_VALUE.equals(requestHeaders.get(SECURITY_HEADER));
+    public boolean isAuthenticated(HttpHeaders headers) {
+        if (headers == null) {
+            return false;
+        }
+        logger.info("Request headers [{}].",
+                headers.entrySet()
+                        .stream()
+                        .map(entry -> String.format("%s->%s", entry.getKey(), entry.getValue()))
+                        .collect(joining(","))
+        );
+        return headers.containsKey(SECURITY_HEADER) && SECURITY_HEADER_VALUE.equals(headers.getFirst(SECURITY_HEADER));
     }
 
-    public boolean isAuthorized(Map<String, String> requestHeaders) {
-        return isAuthenticated(requestHeaders);
+    public boolean isAuthorized(HttpHeaders headers) {
+        return isAuthenticated(headers);
     }
 }
