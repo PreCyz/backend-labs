@@ -1,6 +1,20 @@
 # Getting Started
 
-https://dzone.com/articles/bounty-spring-boot-and-postgresql-database
+Description how to setup project with spring boot and postgresql [link](https://dzone.com/articles/bounty-spring-boot-and-postgresql-database).<br/>
+Description how to deploy to aws [link](https://www.callicoder.com/deploy-host-spring-boot-apps-on-aws-using-elastic-beanstalk/).<br/>
+Description how to connect pgAdmin to remote db [link](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ConnectToPostgreSQLInstance.html).<br/>
+
+#### Compilation class versions
+49 = Java 5<br/>
+50 = Java 6<br/>
+51 = Java 7<br/>
+52 = Java 8<br/>
+53 = Java 9<br/>
+54 = Java 10<br/>
+55 = Java 11<br/>
+56 = Java 12<br/>
+57 = Java 13<br/>
+
 
 ### Reference Documentation
 For further reference, please consider the following sections:
