@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS company;
+
+CREATE TABLE company (
+  id INT AUTO_INCREMENT  PRIMARY KEY,
+  name VARCHAR(250) NOT NULL,
+  start_date TIMESTAMP NOT NULL,
+  board_members INT DEFAULT NULL
+);
