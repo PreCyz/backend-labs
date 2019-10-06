@@ -4,6 +4,7 @@ Description how to setup project with spring boot and postgresql [link](https://
 Description how to deploy to aws [link](https://www.callicoder.com/deploy-host-spring-boot-apps-on-aws-using-elastic-beanstalk/).<br/>
 Description how to connect pgAdmin to remote db [link](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ConnectToPostgreSQLInstance.html).<br/>
 For test the application use this [endpoint](http://pwsecondtry-env.wrujijgsjr.eu-central-1.elasticbeanstalk.com).<br/>
+Returning files with spring [link](https://www.baeldung.com/spring-controller-return-image-file)
 Actuator endpoints<br/>
 [auditevents](http://pwsecondtry-env.wrujijgsjr.eu-central-1.elasticbeanstalk.com/actuator/auditevents) – lists security audit-related events such as user login/logout. Also, we can filter by principal or type among others fields<br/>
 [beans](http://pwsecondtry-env.wrujijgsjr.eu-central-1.elasticbeanstalk.com/actuator/beans) – returns all available beans in our BeanFactory. Unlike /auditevents, it doesn't support filtering<br/>

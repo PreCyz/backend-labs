@@ -3,14 +3,23 @@ package pw.backend.lab.backlab.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pw.backend.lab.backlab.dao.CompanyRepository;
 import pw.backend.lab.backlab.model.Company;
+import pw.backend.lab.backlab.model.CompanyLogo;
+import pw.backend.lab.backlab.service.CompanyLogoService;
 import pw.backend.lab.backlab.service.CompanyService;
 import pw.backend.lab.backlab.service.SecurityService;
+import pw.backend.lab.backlab.web.UploadFileResponse;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -28,12 +37,18 @@ public class CompanyController {
     private CompanyRepository repository;
     private SecurityService securityService;
     private CompanyService companyService;
+    private CompanyLogoService companyLogoService;
 
     @Autowired
     public CompanyController(CompanyRepository repository, SecurityService securityService, CompanyService companyService) {
         this.repository = repository;
         this.securityService = securityService;
         this.companyService = companyService;
+    }
+
+    @Autowired
+    public void setCompanyLogoService(CompanyLogoService companyLogoService) {
+        this.companyLogoService = companyLogoService;
     }
 
     @PostMapping(path = "")
@@ -103,4 +118,36 @@ public class CompanyController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
     }
+
+    @PostMapping("/{companyId}/logo")
+    @Transactional
+    public UploadFileResponse uploadLogo(@PathVariable Long companyId, @RequestParam("file") MultipartFile file) {
+        CompanyLogo companyLogo = companyLogoService.storeLogo(companyId, file);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/companies/" + companyId + "/logo/")
+                .path(companyLogo.getFileName())
+                .toUriString();
+
+        return new UploadFileResponse(companyLogo.getFileName(), fileDownloadUri, file.getContentType(), file.getSize());
+    }
+
+    @GetMapping(value = "/{companyId}/logo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @Transactional
+    public @ResponseBody byte[] getLog(@PathVariable Long companyId) {
+        CompanyLogo companyLogo = companyLogoService.getCompanyLogo(companyId);
+        return companyLogo.getData();
+    }
+
+    @GetMapping(value = "/{companyId}/logo2")
+    @Transactional
+    public ResponseEntity<Resource> getLogo2(@PathVariable Long companyId) {
+        CompanyLogo companyLogo = companyLogoService.getCompanyLogo(companyId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(companyLogo.getFileType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + companyLogo.getFileName() + "\"")
+                .body(new ByteArrayResource(companyLogo.getData()));
+    }
+
 }
