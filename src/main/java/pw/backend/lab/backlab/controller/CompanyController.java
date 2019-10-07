@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pw.backend.lab.backlab.appException.UnauthorizedException;
 import pw.backend.lab.backlab.dao.CompanyRepository;
 import pw.backend.lab.backlab.model.Company;
 import pw.backend.lab.backlab.model.CompanyLogo;
@@ -52,8 +53,7 @@ public class CompanyController {
     }
 
     @PostMapping(path = "")
-    public ResponseEntity<String> createCompanies(@RequestHeader HttpHeaders headers,
-                                                  @Valid @RequestBody List<Company> companies) {
+    public ResponseEntity<String> createCompanies(@RequestHeader HttpHeaders headers, @Valid @RequestBody List<Company> companies) {
         logHeaders(headers);
         if (securityService.isAuthorized(headers)) {
             List<Company> result = repository.saveAll(companies);
@@ -116,38 +116,61 @@ public class CompanyController {
             }
             return ResponseEntity.ok("");
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access to resources.");
     }
 
     @PostMapping("/{companyId}/logo")
     @Transactional
-    public UploadFileResponse uploadLogo(@PathVariable Long companyId, @RequestParam("file") MultipartFile file) {
-        CompanyLogo companyLogo = companyLogoService.storeLogo(companyId, file);
+    public ResponseEntity<UploadFileResponse> uploadLogo(@RequestHeader HttpHeaders headers, @PathVariable Long companyId, @RequestParam("file") MultipartFile file) {
+        logHeaders(headers);
+        if (securityService.isAuthorized(headers)) {
+            CompanyLogo companyLogo = companyLogoService.storeLogo(companyId, file);
 
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/companies/" + companyId + "/logo/")
-                .path(companyLogo.getFileName())
-                .toUriString();
-
-        return new UploadFileResponse(companyLogo.getFileName(), fileDownloadUri, file.getContentType(), file.getSize());
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/companies/" + companyId + "/logo/")
+                    .path(companyLogo.getFileName())
+                    .toUriString();
+            return ResponseEntity.ok(new UploadFileResponse(companyLogo.getFileName(), fileDownloadUri, file.getContentType(), file.getSize()));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
     @GetMapping(value = "/{companyId}/logo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @Transactional
-    public @ResponseBody byte[] getLog(@PathVariable Long companyId) {
-        CompanyLogo companyLogo = companyLogoService.getCompanyLogo(companyId);
-        return companyLogo.getData();
+    public @ResponseBody byte[] getLog(@RequestHeader HttpHeaders headers, @PathVariable Long companyId) {
+        logHeaders(headers);
+        if (securityService.isAuthorized(headers)) {
+            CompanyLogo companyLogo = companyLogoService.getCompanyLogo(companyId);
+            return companyLogo.getData();
+        }
+
+        throw new UnauthorizedException("Unauthorized access to resources.");
     }
 
     @GetMapping(value = "/{companyId}/logo2")
     @Transactional
-    public ResponseEntity<Resource> getLogo2(@PathVariable Long companyId) {
-        CompanyLogo companyLogo = companyLogoService.getCompanyLogo(companyId);
+    public ResponseEntity<Resource> getLogo2(@RequestHeader HttpHeaders headers, @PathVariable Long companyId) {
+        logHeaders(headers);
+        if (securityService.isAuthorized(headers)) {
+            CompanyLogo companyLogo = companyLogoService.getCompanyLogo(companyId);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(companyLogo.getFileType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + companyLogo.getFileName() + "\"")
-                .body(new ByteArrayResource(companyLogo.getData()));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(companyLogo.getFileType()))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + companyLogo.getFileName() + "\"")
+                    .body(new ByteArrayResource(companyLogo.getData()));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+
+    @DeleteMapping(value = "/{companyId}/logo")
+    @Transactional
+    public ResponseEntity<String> removeLogo(@RequestHeader HttpHeaders headers, @PathVariable String companyId) {
+        logHeaders(headers);
+        if (securityService.isAuthorized(headers)) {
+            companyLogoService.deleteCompanyLogo(Long.parseLong(companyId));
+            return ResponseEntity.ok().body(String.format("Logo for the company with id %s removed.", companyId));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access to resources.");
     }
 
 }

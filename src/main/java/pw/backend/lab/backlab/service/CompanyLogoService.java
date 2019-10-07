@@ -7,4 +7,5 @@ import pw.backend.lab.backlab.model.CompanyLogo;
 public interface CompanyLogoService {
     CompanyLogo storeLogo(long companyId, MultipartFile file);
     CompanyLogo getCompanyLogo(long companyId);
+    void deleteCompanyLogo(long companyId);
 }
