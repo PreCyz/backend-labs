@@ -21,8 +21,6 @@ public class CompanyLogo {
     private String fileType;
     private long companyId;
     @Lob
-    //@Type(type = "org.hibernate.type.ImageType")
-    //@Type(type = "org.hibernate.type.BlobType")
     private byte[] data;
 
     public CompanyLogo(String fileName, String fileType, long companyId, byte[] data) {

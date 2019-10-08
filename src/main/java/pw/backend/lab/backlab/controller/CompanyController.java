@@ -71,12 +71,12 @@ public class CompanyController {
         );
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/{companyId}")
     public ResponseEntity<Company> getCompany(@RequestHeader HttpHeaders headers,
-                                              @PathVariable Long id) {
+                                              @PathVariable Long companyId) {
         logHeaders(headers);
         if (securityService.isAuthorized(headers)) {
-            return ResponseEntity.ok(repository.findById(id).orElseGet(() -> Company.EMPTY));
+            return ResponseEntity.ok(repository.findById(companyId).orElseGet(() -> Company.EMPTY));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Company.EMPTY);
     }
@@ -114,7 +114,7 @@ public class CompanyController {
             if (!deleted) {
                 return ResponseEntity.badRequest().body(String.format("Company with id %s does not exists.", companyId));
             }
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok(String.format("Company with id %s deleted.", companyId));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access to resources.");
     }

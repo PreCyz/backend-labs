@@ -15,10 +15,8 @@ import static org.mockito.Mockito.*;
 /** Created by Pawel Gawedzki on 05-Oct-2019. */
 @RunWith(MockitoJUnitRunner.class)
 public class CompanyServiceImplTest {
-
     @Mock
     private CompanyRepository repository;
-
     private CompanyServiceImpl companyService;
 
     @Before
