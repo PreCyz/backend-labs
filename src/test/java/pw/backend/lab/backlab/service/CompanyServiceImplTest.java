@@ -1,9 +1,10 @@
 package pw.backend.lab.backlab.service;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import pw.backend.lab.backlab.dao.CompanyRepository;
 import pw.backend.lab.backlab.model.Company;
@@ -17,12 +18,9 @@ import static org.mockito.Mockito.*;
 public class CompanyServiceImplTest {
     @Mock
     private CompanyRepository repository;
+    @Spy
+    @InjectMocks
     private CompanyServiceImpl companyService;
-
-    @Before
-    public void setUp() {
-        companyService = spy(new CompanyServiceImpl(repository));
-    }
 
     @Test
     public void givenNotExistingId_whenUpdateCompany_theReturnCompanyEMPTY() {

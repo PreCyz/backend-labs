@@ -14,8 +14,10 @@ class CompanyServiceImpl implements CompanyService {
 
     private CompanyRepository repository;
 
+    CompanyServiceImpl() { /*Needed only for initializing spy in unit tests*/}
+
     @Autowired
-    public CompanyServiceImpl(CompanyRepository repository) {
+    CompanyServiceImpl(CompanyRepository repository) {
         this.repository = repository;
     }
 

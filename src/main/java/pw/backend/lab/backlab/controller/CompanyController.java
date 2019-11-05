@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -120,7 +119,6 @@ public class CompanyController {
     }
 
     @PostMapping("/{companyId}/logo")
-    @Transactional
     public ResponseEntity<UploadFileResponse> uploadLogo(@RequestHeader HttpHeaders headers, @PathVariable Long companyId, @RequestParam("file") MultipartFile file) {
         logHeaders(headers);
         if (securityService.isAuthorized(headers)) {
@@ -136,7 +134,6 @@ public class CompanyController {
     }
 
     @GetMapping(value = "/{companyId}/logo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @Transactional
     public @ResponseBody byte[] getLog(@RequestHeader HttpHeaders headers, @PathVariable Long companyId) {
         logHeaders(headers);
         if (securityService.isAuthorized(headers)) {
@@ -148,7 +145,6 @@ public class CompanyController {
     }
 
     @GetMapping(value = "/{companyId}/logo2")
-    @Transactional
     public ResponseEntity<Resource> getLogo2(@RequestHeader HttpHeaders headers, @PathVariable Long companyId) {
         logHeaders(headers);
         if (securityService.isAuthorized(headers)) {
@@ -163,7 +159,6 @@ public class CompanyController {
     }
 
     @DeleteMapping(value = "/{companyId}/logo")
-    @Transactional
     public ResponseEntity<String> removeLogo(@RequestHeader HttpHeaders headers, @PathVariable String companyId) {
         logHeaders(headers);
         if (securityService.isAuthorized(headers)) {
